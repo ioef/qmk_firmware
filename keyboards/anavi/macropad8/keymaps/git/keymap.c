@@ -11,21 +11,14 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#include QMK_KEYBOARD_H
 
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define _MAIN 0
 #define _FN 1
 
- * This keymap contains the following shortcuts for Git. On the
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 /*
  * This keymap contains the following shortcuts for Git. On the
  * first row from left to right:
@@ -44,15 +37,14 @@
  *
  */
 
-#include QMK_KEYBOARD_H
-#include QMK_KEYBOARD_H
-#include QMK_KEYBOARD_H
-#include QMK_KEYBOARD_H
-#include QMK_KEYBOARD_H
-#include QMK_KEYBOARD_H
-#include QMK_KEYBOARD_H
 enum custom_keycodes {
 	GITCOMMIT = SAFE_RANGE,
+	GITPUSH,
+	GITPULL,
+	GITSTATUS,
+	GITDIFF,
+	GITLOG,
+	GITADD
 };
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
@@ -60,8 +52,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 	case GITCOMMIT:
 		if (record->event.pressed) {
 			SEND_STRING("git commit -s\n");
-	GITADD
-	GITADD
 		}
 	break;
 	case GITPUSH:
@@ -83,11 +73,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 		if (record->event.pressed) {
 			SEND_STRING("git diff ");
 		}
-	GITADD
-	GITADD
-	GITADD
-	GITADD
-	GITADD
 	break;
 	case GITLOG:
 		if (record->event.pressed) {
@@ -103,10 +88,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 	return true;
 };
 
-	GITADD
-	GITADD
-	GITADD
-	GITADD
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   [_MAIN] = LAYOUT_ortho_2x4(
      GITSTATUS, GITLOG, GITPULL, GITPUSH,
