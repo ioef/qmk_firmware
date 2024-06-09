@@ -17,6 +17,7 @@
 #include QMK_KEYBOARD_H
 
 enum layers {
+    _BASIC,
     _VIM,
     _FN
 };
@@ -34,6 +35,21 @@ static char current_alpha_oled [12] = "None";
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 /* _BASIC Layer
+ * ,-------------------------------------.
+ * |         |         |        |         |
+ * | Select  | New Tab |  Undo  | Search  |
+ * | All     | New Term|        |         |
+ * |---------+---------+--------+---------+
+ * |         |         |        |   TO    |
+ * |  Cut    |   Copy  |  Paste | _BASIC  |
+ * |         |         |        |         |
+ *  `-------------------------------------'
+ */ 
+ [_BASIC] = LAYOUT_ortho_2x4(
+     LCTL(KC_A), LCTL(KC_T), LCTL(KC_Z), LCTL(KC_F),
+     LCTL(KC_X), LCTL(KC_C), LCTL(KC_V),  TO(_VIM)
+  ),
+/* _VIM Layer
  * ,-------------------------------------.
  * |         | Save    |        |         |
  * |    F2   | & Exit  |  Undo  |  Redo   |
@@ -53,7 +69,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * inoremap <F2> <Esc>
  *  
  */ 
-[_VIM] = LAYOUT_ortho_2x4(
+ [_VIM] = LAYOUT_ortho_2x4(
         KC_F2, SAVE_EXIT, KC_U, LCTL(KC_R),
         DD, YY, KC_P, TO(_FN) 
     ),
@@ -70,7 +86,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  */ 
   [_FN] = LAYOUT_ortho_2x4(
      RGB_TOG, RGB_MOD, RGB_M_R, RGB_M_SN,
-     BL_TOGG, BL_STEP, BL_BRTG, TO(_VIM)
+     BL_TOGG, BL_STEP, BL_BRTG, TO(_BASIC)
   )
 };
 
@@ -84,7 +100,29 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         char string [33];
         switch(keycode)
         {
-            //First Layer with Vim Keys
+              //First Layer with Basic Keys
+            case LCTL(KC_X):
+                strncpy(current_alpha_oled, "Cut", sizeof(current_alpha_oled));
+                break;
+            case LCTL(KC_F):
+                strncpy(current_alpha_oled, "Search", sizeof(current_alpha_oled));
+                break;
+            case LCTL(KC_Z):
+                strncpy(current_alpha_oled, "Undo", sizeof(current_alpha_oled));
+                break;
+            case LCTL(KC_C):
+                strncpy(current_alpha_oled, "Copy", sizeof(current_alpha_oled));
+                break;
+            case LCTL(KC_V):
+                strncpy(current_alpha_oled, "Paste", sizeof(current_alpha_oled));
+                break;
+            case LCTL(KC_T):
+                strncpy(current_alpha_oled, "NewTab", sizeof(current_alpha_oled));
+                break;
+            case LCTL(KC_A):
+                strncpy(current_alpha_oled, "Sel. All", sizeof(current_alpha_oled));
+                break;
+            //Second Layer with Vim Keys
             case KC_F2:
                 strncpy(current_alpha_oled, "Toggle", sizeof(current_alpha_oled));
                 break;
@@ -117,28 +155,28 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                 break;
             // FN Layer keys
             case RGB_TOG:
-                //strncpy(current_alpha_oled, "RGB Toggle", sizeof(current_alpha_oled));
+                strncpy(current_alpha_oled, "RGB Toggle", sizeof(current_alpha_oled));
                 break;
             case RGB_MOD:
-                //strncpy(current_alpha_oled, "RGB Fwd", sizeof(current_alpha_oled));
+                strncpy(current_alpha_oled, "RGB Fwd", sizeof(current_alpha_oled));
                 break;
             case RGB_M_R:
-                //strncpy(current_alpha_oled, "RGB Rev", sizeof(current_alpha_oled));
+                strncpy(current_alpha_oled, "RGB Rev", sizeof(current_alpha_oled));
                 break;
             case RGB_MODE_SNAKE:
-                //strncpy(current_alpha_oled, "RGB Snk", sizeof(current_alpha_oled));
+                strncpy(current_alpha_oled, "RGB Snk", sizeof(current_alpha_oled));
                 break;
             case BL_TOGG:
-                //strncpy(current_alpha_oled, "BkLgt Tog", sizeof(current_alpha_oled));
+                strncpy(current_alpha_oled, "BkLgt Tog", sizeof(current_alpha_oled));
                 break;
             case BL_STEP:
-                //strncpy(current_alpha_oled, "BkLgt Lvl", sizeof(current_alpha_oled));
+                strncpy(current_alpha_oled, "BkLgt Lvl", sizeof(current_alpha_oled));
                 break;
             case BL_BRTG:
-                //strncpy(current_alpha_oled, "BkLgt Brth", sizeof(current_alpha_oled));
+                strncpy(current_alpha_oled, "BkLgt Brth", sizeof(current_alpha_oled));
                 break;
             //FN Key keycodes
-            case TO(_VIM)...TO(_FN):
+            case TO(_BASIC)...TO(_FN):
                strncpy(current_alpha_oled, "Switcher", sizeof(current_alpha_oled));
                break;
             default:
@@ -155,6 +193,9 @@ bool oled_task_user(void) {
   oled_write_P(PSTR("Active layer: "), false);
 
   switch (get_highest_layer(layer_state)) {
+    case _BASIC:
+      oled_write_ln_P(PSTR("Basic"), false);
+      break;
     case _VIM:
       oled_write_ln_P(PSTR("Vim"), false);
       break;
